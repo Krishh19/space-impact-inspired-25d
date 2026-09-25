@@ -1,6 +1,8 @@
 import type { BoundingBox } from "../core/Types";
 import type { Enemy } from "./Enemy";
 import type { EnemyPool } from "./EnemyPool";
+import type { Item } from "./Item";
+import type { ItemPool } from "./ItemPool";
 import type { Player } from "./Player";
 import type { Projectile } from "./Projectile";
 import type { ProjectilePool } from "./ProjectilePool";
@@ -141,6 +143,29 @@ export class CollisionSystem {
     if (this.checkAABB(this.boundA, this.boundB)) {
       const playerKilled = player.takeDamage();
       onHit(playerKilled);
+    }
+  }
+
+  checkPlayerItemCollisions(
+    itemPool: ItemPool,
+    player: Player,
+    onCollect: (item: Item) => void
+  ): void {
+    if (!player.active) return;
+
+    player.getBounds(this.boundA);
+    const items = itemPool.getAll();
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (!item.active) continue;
+
+      item.getBounds(this.boundB);
+
+      if (this.checkAABB(this.boundA, this.boundB)) {
+        item.destroy();
+        onCollect(item);
+      }
     }
   }
 }

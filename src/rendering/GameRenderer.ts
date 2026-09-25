@@ -2,16 +2,16 @@ import * as THREE from "three";
 import {
   ASPECT_RATIO,
   COLOR_BG,
-  COLOR_DARK_GREEN,
-  DEPTH_BACKGROUND,
   DEPTH_BOSS,
   DEPTH_ENEMIES,
+  DEPTH_ITEMS,
   DEPTH_PARTICLES,
   DEPTH_PLAYER,
   DEPTH_PROJECTILES,
   ENEMY_POOL_SIZE,
   GAME_HEIGHT,
   GAME_WIDTH,
+  ITEM_POOL_SIZE,
   PARTICLE_POOL_SIZE,
   PLAYER_HEIGHT,
   PLAYER_WIDTH,
@@ -22,11 +22,12 @@ import {
   RENDER_TARGET_WIDTH,
   SCOUT_HEIGHT,
   SCOUT_WIDTH,
+  THEME_PALETTES,
   TITAN_WARDEN_HEIGHT,
   TITAN_WARDEN_WIDTH,
 } from "../core/Constants";
 import type { Game } from "../core/Game";
-import type { EnemyArchetype } from "../core/Types";
+import type { EnemyArchetype, ItemType, SkinId, ThemeId } from "../core/Types";
 import { EnvironmentManager } from "./EnvironmentManager";
 import { LCDShader } from "../shaders/LCDShader";
 import { TextureGenerator } from "./TextureGenerator";
@@ -37,14 +38,18 @@ export class GameRenderer {
   readonly renderer: THREE.WebGLRenderer;
 
   private readonly playerSprite: THREE.Sprite;
+  private readonly shieldSprite: THREE.Sprite;
   private readonly projectileSprites: THREE.Sprite[] = [];
   private readonly enemySprites: THREE.Sprite[] = [];
   private readonly particleSprites: THREE.Sprite[] = [];
+  private readonly itemSprites: THREE.Sprite[] = [];
   private readonly environment: EnvironmentManager;
 
+  private readonly playerMaterials: Record<SkinId, THREE.SpriteMaterial>;
   private readonly projPlayerMat: THREE.SpriteMaterial;
   private readonly projEnemyMat: THREE.SpriteMaterial;
   private readonly enemyMaterials: Record<EnemyArchetype, THREE.SpriteMaterial>;
+  private readonly itemMaterials: Record<ItemType, THREE.SpriteMaterial>;
   private readonly bossSprite: THREE.Sprite;
   private readonly bossMat: THREE.SpriteMaterial;
   private readonly bossEnragedMat: THREE.SpriteMaterial;
@@ -95,34 +100,33 @@ export class GameRenderer {
     // 2.5D Multi-layer Parallax Environment (Stars, Planet, Asteroids, Debris)
     this.environment = new EnvironmentManager(this.scene);
 
-    // Texture generation
-    const playerTexture = TextureGenerator.createPlayerTexture();
-    const scoutTexture = TextureGenerator.createScoutTexture();
-    const weaverTexture = TextureGenerator.createWeaverTexture();
-    const swooperTexture = TextureGenerator.createSwooperTexture();
-    const chaserTexture = TextureGenerator.createChaserTexture();
-    const projTexture = TextureGenerator.createProjectileTexture();
-    const enemyProjTexture = TextureGenerator.createEnemyProjectileTexture();
+    // Texture generation for Player Skins
+    this.playerMaterials = {
+      alpha: new THREE.SpriteMaterial({ map: TextureGenerator.createPlayerTexture("alpha"), transparent: true }),
+      valkyrie: new THREE.SpriteMaterial({ map: TextureGenerator.createPlayerTexture("valkyrie"), transparent: true }),
+      phantom: new THREE.SpriteMaterial({ map: TextureGenerator.createPlayerTexture("phantom"), transparent: true }),
+      solaris: new THREE.SpriteMaterial({ map: TextureGenerator.createPlayerTexture("solaris"), transparent: true }),
+    };
 
     // Player sprite
-    const playerMat = new THREE.SpriteMaterial({
-      map: playerTexture,
-      transparent: true,
-    });
-    this.playerSprite = new THREE.Sprite(playerMat);
+    this.playerSprite = new THREE.Sprite(this.playerMaterials.alpha);
     this.playerSprite.scale.set(PLAYER_WIDTH, PLAYER_HEIGHT, 1);
     this.playerSprite.position.set(0, 0, DEPTH_PLAYER);
     this.scene.add(this.playerSprite);
 
+    // Shield barrier aura sprite
+    const shieldTexture = TextureGenerator.createShieldAuraTexture();
+    const shieldMat = new THREE.SpriteMaterial({ map: shieldTexture, transparent: true });
+    this.shieldSprite = new THREE.Sprite(shieldMat);
+    this.shieldSprite.scale.set(16, 16, 1);
+    this.shieldSprite.visible = false;
+    this.scene.add(this.shieldSprite);
+
     // Projectile materials & sprite pool
-    this.projPlayerMat = new THREE.SpriteMaterial({
-      map: projTexture,
-      transparent: true,
-    });
-    this.projEnemyMat = new THREE.SpriteMaterial({
-      map: enemyProjTexture,
-      transparent: true,
-    });
+    const projTexture = TextureGenerator.createProjectileTexture();
+    const enemyProjTexture = TextureGenerator.createEnemyProjectileTexture();
+    this.projPlayerMat = new THREE.SpriteMaterial({ map: projTexture, transparent: true });
+    this.projEnemyMat = new THREE.SpriteMaterial({ map: enemyProjTexture, transparent: true });
     for (let i = 0; i < PROJECTILE_POOL_SIZE; i++) {
       const sprite = new THREE.Sprite(this.projPlayerMat);
       sprite.scale.set(PROJECTILE_WIDTH, PROJECTILE_HEIGHT, 1);
@@ -133,10 +137,10 @@ export class GameRenderer {
 
     // Enemy materials & sprite pool
     this.enemyMaterials = {
-      scout: new THREE.SpriteMaterial({ map: scoutTexture, transparent: true }),
-      weaver: new THREE.SpriteMaterial({ map: weaverTexture, transparent: true }),
-      swooper: new THREE.SpriteMaterial({ map: swooperTexture, transparent: true }),
-      chaser: new THREE.SpriteMaterial({ map: chaserTexture, transparent: true }),
+      scout: new THREE.SpriteMaterial({ map: TextureGenerator.createScoutTexture(), transparent: true }),
+      weaver: new THREE.SpriteMaterial({ map: TextureGenerator.createWeaverTexture(), transparent: true }),
+      swooper: new THREE.SpriteMaterial({ map: TextureGenerator.createSwooperTexture(), transparent: true }),
+      chaser: new THREE.SpriteMaterial({ map: TextureGenerator.createChaserTexture(), transparent: true }),
     };
     for (let i = 0; i < ENEMY_POOL_SIZE; i++) {
       const sprite = new THREE.Sprite(this.enemyMaterials.scout);
@@ -146,12 +150,25 @@ export class GameRenderer {
       this.scene.add(sprite);
     }
 
+    // Collectible Item materials & sprite pool
+    this.itemMaterials = {
+      coin: new THREE.SpriteMaterial({ map: TextureGenerator.createCoinTexture(), transparent: true }),
+      powerup_spread: new THREE.SpriteMaterial({ map: TextureGenerator.createPowerupTexture("spread"), transparent: true }),
+      powerup_rapid: new THREE.SpriteMaterial({ map: TextureGenerator.createPowerupTexture("rapid"), transparent: true }),
+      powerup_shield: new THREE.SpriteMaterial({ map: TextureGenerator.createPowerupTexture("shield"), transparent: true }),
+      powerup_bomb: new THREE.SpriteMaterial({ map: TextureGenerator.createPowerupTexture("bomb"), transparent: true }),
+    };
+    for (let i = 0; i < ITEM_POOL_SIZE; i++) {
+      const sprite = new THREE.Sprite(this.itemMaterials.coin);
+      sprite.scale.set(6, 6, 1);
+      sprite.visible = false;
+      this.itemSprites.push(sprite);
+      this.scene.add(sprite);
+    }
+
     // Particle sprite pool
     const particleTexture = TextureGenerator.createParticleTexture();
-    const particleMat = new THREE.SpriteMaterial({
-      map: particleTexture,
-      transparent: true,
-    });
+    const particleMat = new THREE.SpriteMaterial({ map: particleTexture, transparent: true });
     for (let i = 0; i < PARTICLE_POOL_SIZE; i++) {
       const sprite = new THREE.Sprite(particleMat.clone());
       sprite.scale.set(2, 2, 1);
@@ -163,14 +180,8 @@ export class GameRenderer {
     // Boss materials & sprite
     const bossTexture = TextureGenerator.createTitanWardenTexture();
     const bossEnragedTexture = TextureGenerator.createTitanWardenTexture(true);
-    this.bossMat = new THREE.SpriteMaterial({
-      map: bossTexture,
-      transparent: true,
-    });
-    this.bossEnragedMat = new THREE.SpriteMaterial({
-      map: bossEnragedTexture,
-      transparent: true,
-    });
+    this.bossMat = new THREE.SpriteMaterial({ map: bossTexture, transparent: true });
+    this.bossEnragedMat = new THREE.SpriteMaterial({ map: bossEnragedTexture, transparent: true });
     this.bossSprite = new THREE.Sprite(this.bossMat);
     this.bossSprite.scale.set(TITAN_WARDEN_WIDTH, TITAN_WARDEN_HEIGHT, 1);
     this.bossSprite.position.set(0, 0, DEPTH_BOSS);
@@ -178,7 +189,7 @@ export class GameRenderer {
     this.scene.add(this.bossSprite);
 
     // Initialize low-resolution offscreen render targets for LCD post-processing
-    const rtOptions: THREE.RenderTargetOptions = {
+    const renderTargetParams: THREE.RenderTargetOptions = {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
       format: THREE.RGBAFormat,
@@ -188,35 +199,50 @@ export class GameRenderer {
     this.renderTargetA = new THREE.WebGLRenderTarget(
       RENDER_TARGET_WIDTH,
       RENDER_TARGET_HEIGHT,
-      rtOptions
+      renderTargetParams
     );
     this.renderTargetB = new THREE.WebGLRenderTarget(
       RENDER_TARGET_WIDTH,
       RENDER_TARGET_HEIGHT,
-      rtOptions
+      renderTargetParams
     );
     this.currentRenderTarget = this.renderTargetA;
     this.previousRenderTarget = this.renderTargetB;
 
-    // Fullscreen post-processing scene & quad
+    // Fullscreen quad for LCD post-processing pass
     this.postScene = new THREE.Scene();
     this.postCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     this.postMaterial = new THREE.ShaderMaterial({
-      uniforms: THREE.UniformsUtils.clone(LCDShader.uniforms),
+      uniforms: {
+        tDiffuse: { value: null },
+        tPrevious: { value: null },
+        uResolution: { value: new THREE.Vector2(RENDER_TARGET_WIDTH, RENDER_TARGET_HEIGHT) },
+        uGhosting: { value: LCDShader.uniforms.uGhosting.value },
+        uGridIntensity: { value: LCDShader.uniforms.uGridIntensity.value },
+        uVignette: { value: LCDShader.uniforms.uVignette.value },
+        uColorInk: { value: new THREE.Color(LCDShader.uniforms.uColorInk.value) },
+        uColorDark: { value: new THREE.Color(LCDShader.uniforms.uColorDark.value) },
+        uColorMid: { value: new THREE.Color(LCDShader.uniforms.uColorMid.value) },
+        uColorLight: { value: new THREE.Color(LCDShader.uniforms.uColorLight.value) },
+      },
       vertexShader: LCDShader.vertexShader,
       fragmentShader: LCDShader.fragmentShader,
       depthTest: false,
       depthWrite: false,
     });
-    this.postMaterial.uniforms.uResolution.value.set(
-      RENDER_TARGET_WIDTH,
-      RENDER_TARGET_HEIGHT
-    );
-    const postGeo = new THREE.PlaneGeometry(2, 2);
-    this.postQuad = new THREE.Mesh(postGeo, this.postMaterial);
+    this.postQuad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), this.postMaterial);
     this.postScene.add(this.postQuad);
+  }
 
-    this.resize();
+  setTheme(themeId: ThemeId): void {
+    const palette = THEME_PALETTES[themeId] || THEME_PALETTES.verdant;
+    this.postMaterial.uniforms.uColorInk.value.setHex(palette.ink);
+    this.postMaterial.uniforms.uColorDark.value.setHex(palette.dark);
+    this.postMaterial.uniforms.uColorMid.value.setHex(palette.mid);
+    this.postMaterial.uniforms.uColorLight.value.setHex(palette.light);
+    this.renderer.setClearColor(palette.bg, 1);
+    this.scene.background = new THREE.Color(palette.bg);
+    this.environment.setTheme(themeId);
   }
 
   triggerShake(intensity: number, duration: number): void {
@@ -263,37 +289,41 @@ export class GameRenderer {
       this.camera.position.set(halfW, halfH, 20);
     }
 
-    // Update 2.5D Parallax Environment
+    // Update 2.5D Parallax Environment with active stage
+    this.environment.setStage(game.getCurrentStage());
     this.environment.update(dt);
+
+    const isPlaying = game.getState() === "PLAYING" || game.getState() === "PAUSED";
 
     // Synchronize Player sprite
     const player = game.getPlayer();
-    if (player.active && player.visible && game.getState() === "PLAYING") {
+    if (player.active && player.visible && isPlaying) {
       this.playerSprite.visible = true;
-      this.playerSprite.position.set(
-        player.position.x,
-        player.position.y,
-        DEPTH_PLAYER
-      );
+      this.playerSprite.material = this.playerMaterials[player.currentSkin] || this.playerMaterials.alpha;
+      this.playerSprite.position.set(player.position.x, player.position.y, DEPTH_PLAYER);
+
+      // Synchronize Shield barrier halo
+      if (player.hasShield) {
+        this.shieldSprite.visible = true;
+        this.shieldSprite.position.set(player.position.x, player.position.y, DEPTH_PLAYER + 0.1);
+        this.shieldSprite.material.rotation += dt * 3.0;
+      } else {
+        this.shieldSprite.visible = false;
+      }
     } else {
       this.playerSprite.visible = false;
+      this.shieldSprite.visible = false;
     }
 
     // Synchronize Projectiles
     const projectiles = game.getProjectiles().getAll();
-    const isPlaying = game.getState() === "PLAYING";
     for (let i = 0; i < projectiles.length; i++) {
       const proj = projectiles[i];
       const sprite = this.projectileSprites[i];
       if (proj.active && isPlaying) {
         sprite.visible = true;
         sprite.position.set(proj.position.x, proj.position.y, DEPTH_PROJECTILES);
-        const targetMat =
-          proj.owner === "enemy" ? this.projEnemyMat : this.projPlayerMat;
-        if (sprite.material !== targetMat) {
-          sprite.material = targetMat;
-        }
-        sprite.scale.set(proj.width, proj.height, 1);
+        sprite.material = proj.owner === "player" ? this.projPlayerMat : this.projEnemyMat;
       } else {
         sprite.visible = false;
       }
@@ -307,11 +337,23 @@ export class GameRenderer {
       if (enemy.active && isPlaying) {
         sprite.visible = true;
         sprite.position.set(enemy.position.x, enemy.position.y, DEPTH_ENEMIES);
-        const targetMat = this.enemyMaterials[enemy.type];
-        if (sprite.material !== targetMat) {
-          sprite.material = targetMat;
-        }
+        sprite.material = this.enemyMaterials[enemy.type];
         sprite.scale.set(enemy.width, enemy.height, 1);
+      } else {
+        sprite.visible = false;
+      }
+    }
+
+    // Synchronize Collectibles & Powerups
+    const items = game.getItems().getAll();
+    for (let i = 0; i < items.length; i++) {
+      const it = items[i];
+      const sprite = this.itemSprites[i];
+      if (it.active && isPlaying) {
+        sprite.visible = it.visible;
+        sprite.position.set(it.position.x, it.position.y, DEPTH_ITEMS);
+        sprite.material = this.itemMaterials[it.type] || this.itemMaterials.coin;
+        sprite.scale.set(it.width, it.height, 1);
       } else {
         sprite.visible = false;
       }
@@ -368,16 +410,21 @@ export class GameRenderer {
     this.renderTargetA.dispose();
     this.renderTargetB.dispose();
     this.environment.dispose();
-    this.playerSprite.material.dispose();
+    for (const key of Object.keys(this.playerMaterials) as SkinId[]) {
+      this.playerMaterials[key].dispose();
+    }
+    this.shieldSprite.material.dispose();
     this.projPlayerMat.dispose();
     this.projEnemyMat.dispose();
     for (const key of Object.keys(this.enemyMaterials) as EnemyArchetype[]) {
       this.enemyMaterials[key].dispose();
     }
+    for (const key of Object.keys(this.itemMaterials) as ItemType[]) {
+      this.itemMaterials[key].dispose();
+    }
     this.bossMat.dispose();
     this.bossEnragedMat.dispose();
     this.postMaterial.dispose();
     this.postQuad.geometry.dispose();
-    this.renderer.dispose();
   }
 }

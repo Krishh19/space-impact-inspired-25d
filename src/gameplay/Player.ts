@@ -12,9 +12,12 @@ import {
   PLAYER_START_X,
   PLAYER_START_Y,
   PLAYER_WIDTH,
+  POWERUP_RAPID_DURATION,
+  POWERUP_SPREAD_DURATION,
   PROJECTILE_SPEED,
+  SHIP_SKINS,
 } from "../core/Constants";
-import type { BoundingBox, Entity, GameVec2, InputState } from "../core/Types";
+import type { BoundingBox, Entity, GameVec2, InputState, SkinId } from "../core/Types";
 import type { ProjectilePool } from "./ProjectilePool";
 
 export class Player implements Entity {
@@ -31,12 +34,47 @@ export class Player implements Entity {
   visible = true;
   private fireCooldown = 0;
 
+  // Power-ups, skin and debug state
+  currentSkin: SkinId = "alpha";
+  speedMultiplier = 1.0;
+  hasShield = false;
+  spreadTimer = 0;
+  rapidTimer = 0;
+  godMode = false;
+
+  constructor() {
+    this.applySkin("alpha");
+  }
+
+  applySkin(skinId: SkinId): void {
+    this.currentSkin = skinId;
+    const def = SHIP_SKINS.find((s) => s.id === skinId) || SHIP_SKINS[0];
+    this.speedMultiplier = def.speedMultiplier;
+    if (def.hasStartingShield) {
+      this.hasShield = true;
+    }
+  }
+
+  activatePowerup(type: "spread" | "rapid" | "shield"): void {
+    if (type === "spread") {
+      this.spreadTimer = POWERUP_SPREAD_DURATION;
+    } else if (type === "rapid") {
+      this.rapidTimer = POWERUP_RAPID_DURATION;
+    } else if (type === "shield") {
+      this.hasShield = true;
+    }
+  }
+
   updateWithInput(
     dt: number,
     input: Readonly<InputState>,
     projectilePool: ProjectilePool
   ): boolean {
     if (!this.active) return false;
+
+    // Power-up timers
+    if (this.spreadTimer > 0) this.spreadTimer -= dt;
+    if (this.rapidTimer > 0) this.rapidTimer -= dt;
 
     // Direction calculation
     let dx = 0;
@@ -53,8 +91,9 @@ export class Player implements Entity {
       dy *= invLen;
     }
 
-    this.velocity.x = dx * PLAYER_SPEED;
-    this.velocity.y = dy * PLAYER_SPEED;
+    const effectiveSpeed = PLAYER_SPEED * this.speedMultiplier;
+    this.velocity.x = dx * effectiveSpeed;
+    this.velocity.y = dy * effectiveSpeed;
 
     this.position.x += this.velocity.x * dt;
     this.position.y += this.velocity.y * dt;
@@ -71,13 +110,32 @@ export class Player implements Entity {
       this.fireCooldown -= dt;
     }
 
+    const currentCooldown = this.rapidTimer > 0 ? PLAYER_FIRE_COOLDOWN * 0.5 : PLAYER_FIRE_COOLDOWN;
+
     if (input.fire && this.fireCooldown <= 0) {
       const bulletX = this.position.x + this.width / 2;
       const bulletY = this.position.y;
-      const spawned = projectilePool.acquire(bulletX, bulletY, PROJECTILE_SPEED, 0);
-      if (spawned) {
-        this.fireCooldown = PLAYER_FIRE_COOLDOWN;
+
+      if (this.spreadTimer > 0) {
+        // 3-Way Spread Salvo
+        projectilePool.acquire(bulletX, bulletY, PROJECTILE_SPEED, 0);
+        projectilePool.acquire(bulletX, bulletY + 2, PROJECTILE_SPEED * 0.96, PROJECTILE_SPEED * 0.26);
+        projectilePool.acquire(bulletX, bulletY - 2, PROJECTILE_SPEED * 0.96, -PROJECTILE_SPEED * 0.26);
+        this.fireCooldown = currentCooldown;
         didShoot = true;
+      } else if (this.currentSkin === "solaris") {
+        // Twin Heavy Plasma Cannons
+        projectilePool.acquire(bulletX, bulletY + 2.5, PROJECTILE_SPEED, 0);
+        projectilePool.acquire(bulletX, bulletY - 2.5, PROJECTILE_SPEED, 0);
+        this.fireCooldown = currentCooldown;
+        didShoot = true;
+      } else {
+        // Standard Cannon
+        const spawned = projectilePool.acquire(bulletX, bulletY, PROJECTILE_SPEED, 0);
+        if (spawned) {
+          this.fireCooldown = currentCooldown;
+          didShoot = true;
+        }
       }
     }
 
@@ -101,14 +159,22 @@ export class Player implements Entity {
   }
 
   update(dt: number): void {
-    // Standard Entity update interface compliance
     if (this.invulnerabilityTimer > 0) {
       this.invulnerabilityTimer -= dt;
     }
   }
 
-  takeDamage(): boolean {
-    if (this.invulnerabilityTimer > 0 || !this.active) {
+  takeDamage(onShieldAbsorb?: () => void): boolean {
+    if (this.godMode || this.invulnerabilityTimer > 0 || !this.active) {
+      return false;
+    }
+
+    // Shield absorbs the damage hit
+    if (this.hasShield) {
+      this.hasShield = false;
+      this.invulnerabilityTimer = 1.0;
+      this.blinkTimer = 0;
+      onShieldAbsorb?.();
       return false;
     }
 
@@ -145,6 +211,10 @@ export class Player implements Entity {
     this.visible = true;
     this.fireCooldown = 0;
     this.active = true;
+    this.spreadTimer = 0;
+    this.rapidTimer = 0;
+    this.hasShield = false;
+    this.applySkin(this.currentSkin);
   }
 
   destroy(): void {

@@ -2,6 +2,8 @@ import type { AudioManager } from "../audio/AudioManager";
 import type { EnemyPool } from "../gameplay/EnemyPool";
 import type { LevelDefinition } from "./LevelData";
 import level01Data from "../data/level01.json";
+import level02Data from "../data/level02.json";
+import level03Data from "../data/level03.json";
 
 export interface LevelEventDispatcher {
   showStageTitle(title: string, subtitle: string, duration?: number): void;
@@ -15,6 +17,16 @@ export class LevelDirector {
   private elapsedTime = 0;
   private nextEventIndex = 0;
   private active = false;
+
+  startStage(stageNumber: number): void {
+    if (stageNumber === 2) {
+      this.startLevel(level02Data as unknown as LevelDefinition);
+    } else if (stageNumber === 3) {
+      this.startLevel(level03Data as unknown as LevelDefinition);
+    } else {
+      this.startLevel(level01Data as unknown as LevelDefinition);
+    }
+  }
 
   startLevel(level: LevelDefinition = level01Data as unknown as LevelDefinition): void {
     this.currentLevel = level;

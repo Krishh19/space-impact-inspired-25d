@@ -410,6 +410,140 @@ export class AudioManager {
     osc.stop(now + 0.07);
   }
 
+  playCoin(): void {
+    if (!this.initContext() || !this.ctx || !this.masterGain || this.muted) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.setValueAtTime(1320, now + 0.04);
+
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.1);
+  }
+
+  playPowerup(): void {
+    if (!this.initContext() || !this.ctx || !this.masterGain || this.muted) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [330, 440, 554, 660];
+
+    notes.forEach((freq, idx) => {
+      if (!this.ctx || !this.masterGain) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = "square";
+      const start = now + idx * 0.04;
+      osc.frequency.setValueAtTime(freq, start);
+
+      gain.gain.setValueAtTime(0.1, start);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.06);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(start);
+      osc.stop(start + 0.06);
+    });
+  }
+
+  playShieldBreak(): void {
+    if (!this.initContext() || !this.ctx || !this.masterGain || this.muted) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(120, now + 0.15);
+
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.15);
+  }
+
+  playEmpBomb(): void {
+    if (!this.initContext() || !this.ctx || !this.masterGain || this.muted) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(180, now);
+    osc.frequency.exponentialRampToValueAtTime(32, now + 0.35);
+
+    gain.gain.setValueAtTime(0.25, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.35);
+
+    // Concurrently trigger noise sweep
+    if (this.noiseBuffer) {
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = this.noiseBuffer;
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1200, now);
+      filter.frequency.exponentialRampToValueAtTime(150, now + 0.3);
+
+      const nGain = this.ctx.createGain();
+      nGain.gain.setValueAtTime(0.2, now);
+      nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+      noise.connect(filter);
+      filter.connect(nGain);
+      nGain.connect(this.masterGain);
+
+      noise.start(now);
+      noise.stop(now + 0.3);
+    }
+  }
+
+  playAmbushAlert(): void {
+    if (!this.initContext() || !this.ctx || !this.masterGain || this.muted) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = "square";
+    osc.frequency.setValueAtTime(587.33, now); // D5
+    osc.frequency.setValueAtTime(880.0, now + 0.08); // A5
+    osc.frequency.setValueAtTime(587.33, now + 0.16); // D5
+    osc.frequency.setValueAtTime(1174.66, now + 0.24); // D6
+
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.setValueAtTime(0.18, now + 0.3);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.38);
+  }
+
   setVolume(v: number): void {
     this.volume = Math.max(0, Math.min(1, v));
     if (this.masterGain && this.ctx && !this.muted) {

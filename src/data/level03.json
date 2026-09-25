@@ -1,0 +1,129 @@
+{
+  "id": "level03",
+  "title": "STAGE 3",
+  "subtitle": "CYBER ABYSS",
+  "events": [
+    {
+      "time": 0.5,
+      "type": "stage_title",
+      "title": "STAGE 3",
+      "subtitle": "CYBER ABYSS",
+      "duration": 3.0
+    },
+    {
+      "time": 3.8,
+      "type": "banner",
+      "text": "DREADNOUGHT GRAVEYARD BREACHED",
+      "duration": 2.2
+    },
+    {
+      "time": 5.5,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "swooper", "offsetX": 0, "offsetY": -15 },
+        { "archetype": "chaser", "offsetX": 8, "offsetY": 0 },
+        { "archetype": "swooper", "offsetX": 0, "offsetY": 15 }
+      ]
+    },
+    {
+      "time": 10.5,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "weaver", "offsetX": 0, "offsetY": -22 },
+        { "archetype": "weaver", "offsetX": 10, "offsetY": -10 },
+        { "archetype": "weaver", "offsetX": 20, "offsetY": 10 },
+        { "archetype": "weaver", "offsetX": 30, "offsetY": 22 }
+      ]
+    },
+    {
+      "time": 16.0,
+      "type": "banner",
+      "text": "TACTICAL INTERCEPTORS DETECTED",
+      "duration": 2.0
+    },
+    {
+      "time": 18.5,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 30,
+      "enemies": [
+        { "archetype": "swooper", "offsetX": 0, "offsetY": 0 },
+        { "archetype": "swooper", "offsetX": 10, "offsetY": 10 }
+      ]
+    },
+    {
+      "time": 21.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 60,
+      "enemies": [
+        { "archetype": "swooper", "offsetX": 0, "offsetY": 0 },
+        { "archetype": "swooper", "offsetX": 10, "offsetY": -10 }
+      ]
+    },
+    {
+      "time": 25.5,
+      "type": "elite",
+      "archetype": "chaser",
+      "speed": 24,
+      "hp": 5,
+      "score": 500,
+      "message": "COMMAND DREADNOUGHT FLANK GUARD"
+    },
+    {
+      "time": 31.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "scout", "offsetX": 0, "offsetY": -18 },
+        { "archetype": "chaser", "offsetX": 10, "offsetY": 12 },
+        { "archetype": "weaver", "offsetX": 20, "offsetY": -8 }
+      ]
+    },
+    {
+      "time": 37.0,
+      "type": "recovery",
+      "message": "PLASMA DISCHARGE FIELD INACTIVE",
+      "duration": 2.0
+    },
+    {
+      "time": 40.5,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "swooper", "offsetX": 0, "offsetY": -20 },
+        { "archetype": "swooper", "offsetX": 10, "offsetY": 20 },
+        { "archetype": "weaver", "offsetX": 20, "offsetY": 0 }
+      ]
+    },
+    {
+      "time": 46.5,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "chaser", "offsetX": 0, "offsetY": -15 },
+        { "archetype": "chaser", "offsetX": 12, "offsetY": 15 }
+      ]
+    },
+    {
+      "time": 53.0,
+      "type": "boss_warning",
+      "warningText": "FLAGSHIP PRIME WEAPON ACTIVE",
+      "duration": 4.0
+    },
+    {
+      "time": 57.5,
+      "type": "boss",
+      "bossId": "titan_warden",
+      "name": "TITAN OVERLORD",
+      "hp": 80
+    }
+  ]
+}

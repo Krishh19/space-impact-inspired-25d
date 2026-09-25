@@ -599,6 +599,134 @@ body {
   color: #ffffff;
 }
 
+/* Debug Modal & Developer Console */
+.debug-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11, 26, 18, 0.88);
+  z-index: 50;
+  pointer-events: auto;
+}
+
+.debug-box {
+  max-width: 620px;
+  width: 92%;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: #92b7a0;
+  border: 4px solid #0f2a1d;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.85);
+  color: #0f2a1d;
+  padding: 12px 16px;
+  gap: 8px;
+}
+
+.debug-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #0f2a1d;
+  padding-bottom: 6px;
+}
+
+.debug-scroll-area {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(86vh - 65px);
+  padding-right: 4px;
+}
+
+.debug-section {
+  border: 1px solid rgba(15, 42, 29, 0.6);
+  padding: 6px 8px;
+  background: rgba(15, 42, 29, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.debug-section-title {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #0f2a1d;
+  border-bottom: 1px dashed rgba(15, 42, 29, 0.4);
+  padding-bottom: 2px;
+  margin-bottom: 2px;
+}
+
+.debug-btn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 4px;
+}
+
+.debug-btn {
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  padding: 4px 6px;
+  background: #0f2a1d;
+  color: #92b7a0;
+  border: 1px solid #0f2a1d;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.1s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.debug-btn:hover {
+  background: #265c3f;
+  color: #ffffff;
+}
+
+.debug-btn.active {
+  background: #d4a340;
+  color: #0f2a1d;
+  border-color: #0f2a1d;
+}
+
+.debug-sub-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 8px;
+  font-weight: 900;
+  margin-top: 2px;
+}
+
+.debug-chip-btn {
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 900;
+  padding: 2px 6px;
+  background: rgba(15, 42, 29, 0.15);
+  color: #0f2a1d;
+  border: 1px solid #0f2a1d;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.debug-chip-btn:hover {
+  background: #0f2a1d;
+  color: #92b7a0;
+}
+
 /* Handheld LCD Bezel Mode */
 .game-container.bezel-mode {
   padding: 34px 24px 44px 24px;
@@ -640,3 +768,213 @@ body {
   color: rgba(10, 23, 16, 0.8);
   margin-top: 14px;
 }
+
+/* Modals & Hangar */
+.modal-box.wide {
+  width: 500px;
+  max-width: 95%;
+  max-height: 92vh;
+  overflow-y: auto;
+}
+
+.scrap-display {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #0f2a1d;
+  background: rgba(15, 42, 29, 0.12);
+  padding: 4px 8px;
+  border-radius: 2px;
+  text-align: center;
+}
+
+.ship-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.ship-card {
+  border: 2px solid #0f2a1d;
+  padding: 8px;
+  background: rgba(15, 42, 29, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.ship-card.selected {
+  background: rgba(15, 42, 29, 0.2);
+  border-width: 3px;
+}
+
+.ship-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ship-name {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.ship-perk {
+  font-size: 9px;
+  color: #265c3f;
+  font-weight: 900;
+}
+
+.ship-desc {
+  font-size: 8px;
+  line-height: 1.25;
+  opacity: 0.9;
+  min-height: 24px;
+}
+
+.stage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.stage-card {
+  border: 2px solid #0f2a1d;
+  padding: 6px 10px;
+  background: rgba(15, 42, 29, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.stage-card.selected {
+  background: rgba(15, 42, 29, 0.2);
+}
+
+.stage-card.locked {
+  opacity: 0.45;
+}
+
+/* In-Game Power-Up HUD */
+.hud-powerup-bar {
+  position: absolute;
+  top: 22px;
+  left: 16px;
+  display: flex;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.powerup-badge {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  background: #0f2a1d;
+  color: #92b7a0;
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+.powerup-badge.shield-badge {
+  background: #265c3f;
+  color: #ffffff;
+  box-shadow: 0 0 6px rgba(38, 92, 63, 0.7);
+}
+
+.endless-wave-badge {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  background: #d4a340;
+  color: #0f2a1d;
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+.hud-coins-val {
+  color: #d4a340;
+}
+
+/* Theme Palettes */
+.game-container.theme-amber {
+  background-color: #f3a84b;
+  border-color: #5c3308;
+}
+.game-container.theme-amber .hud-overlay {
+  color: #221303;
+}
+.game-container.theme-amber .title-screen .prompt,
+.game-container.theme-amber .menu-btn:hover,
+.game-container.theme-amber .menu-btn.active {
+  background: #221303;
+  color: #f3a84b;
+  border-color: #221303;
+}
+.game-container.theme-amber .modal-box {
+  background: #f3a84b;
+  border-color: #221303;
+  color: #221303;
+}
+.game-container.theme-amber .game-over-screen,
+.game-container.theme-amber .pause-screen,
+.game-container.theme-amber .victory-screen {
+  background: rgba(243, 168, 75, 0.92);
+}
+
+.game-container.theme-ice {
+  background-color: #8ac4df;
+  border-color: #153c52;
+}
+.game-container.theme-ice .hud-overlay {
+  color: #071520;
+}
+.game-container.theme-ice .title-screen .prompt,
+.game-container.theme-ice .menu-btn:hover,
+.game-container.theme-ice .menu-btn.active {
+  background: #071520;
+  color: #8ac4df;
+  border-color: #071520;
+}
+.game-container.theme-ice .modal-box {
+  background: #8ac4df;
+  border-color: #071520;
+  color: #071520;
+}
+.game-container.theme-ice .game-over-screen,
+.game-container.theme-ice .pause-screen,
+.game-container.theme-ice .victory-screen {
+  background: rgba(138, 196, 223, 0.92);
+}
+
+.game-container.theme-obsidian {
+  background-color: #d4d4d4;
+  border-color: #3a3a3a;
+}
+.game-container.theme-obsidian .hud-overlay {
+  color: #080808;
+}
+.game-container.theme-obsidian .title-screen .prompt,
+.game-container.theme-obsidian .menu-btn:hover,
+.game-container.theme-obsidian .menu-btn.active {
+  background: #080808;
+  color: #d4d4d4;
+  border-color: #080808;
+}
+.game-container.theme-obsidian .modal-box {
+  background: #d4d4d4;
+  border-color: #080808;
+  color: #080808;
+}
+.game-container.theme-obsidian .game-over-screen,
+.game-container.theme-obsidian .pause-screen,
+.game-container.theme-obsidian .victory-screen {
+  background: rgba(212, 212, 212, 0.92);
+}
+
+

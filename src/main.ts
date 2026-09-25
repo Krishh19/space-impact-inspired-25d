@@ -26,10 +26,43 @@ game.setOnShake((intensity, duration) => {
   renderer.triggerShake(intensity, duration);
 });
 
+// Connect theme changes to renderer
+game.setOnThemeChange((theme) => {
+  renderer.setTheme(theme);
+});
+
 // Connect HUD as level event dispatcher (stage titles, tactical banners, warnings)
 game.setLevelDispatcher(hud);
 
-(window as unknown as { __game: Game }).__game = game;
+(window as unknown as { __game: Game; __hud: HudOverlay; __debug: any }).__game = game;
+(window as unknown as { __hud: HudOverlay }).__hud = hud;
+(window as unknown as { __debug: any }).__debug = {
+  godMode: () => game.toggleGodMode(),
+  giveSpread: () => game.debugGivePowerup("spread"),
+  giveRapid: () => game.debugGivePowerup("rapid"),
+  giveShield: () => game.debugGivePowerup("shield"),
+  detonateBomb: () => game.debugDetonateBomb(),
+  triggerAmbush: (type: "spread" | "rapid" | "shield" | "bomb") => game.triggerPowerupAmbush(type),
+  spawnEnemy: (type: any) => game.debugSpawnEnemy(type),
+  spawnBoss: () => game.debugSpawnBoss(),
+  setBossHp: (hp: number) => game.debugSetBossHp(hp),
+  clearEnemies: () => game.debugClearAllEnemies(),
+  spawnItem: (type: any) => game.debugSpawnItem(type),
+  setStage: (stage: number) => game.debugSetStage(stage),
+  setEndlessWave: (wave: number) => game.debugSetEndlessWave(wave),
+  setTimeScale: (scale: number) => game.setTimeScale(scale),
+  unlockAll: () => game.getSettings().unlockAllContent(),
+  resetSave: () => game.getSettings().resetSavedData(),
+  addCoins: (amount: number) => game.getSettings().addCoins(amount),
+  selectSkin: (skinId: any) => {
+    game.getSettings().selectSkin(skinId);
+    game.getPlayer().applySkin(skinId);
+  },
+  setTheme: (themeId: any) => game.getSettings().setTheme(themeId),
+  toggleBezel: () => game.getSettings().toggleBezel(),
+  playSfx: (name: string) => game.debugPlaySfx(name),
+  toggleDebugUI: () => hud.toggleDebugModal(),
+};
 
 const clock = new THREE.Clock();
 

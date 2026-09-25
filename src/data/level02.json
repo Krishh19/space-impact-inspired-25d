@@ -1,0 +1,133 @@
+{
+  "id": "level02",
+  "title": "STAGE 2",
+  "subtitle": "IRON FOUNDRY",
+  "events": [
+    {
+      "time": 0.5,
+      "type": "stage_title",
+      "title": "STAGE 2",
+      "subtitle": "IRON FOUNDRY",
+      "duration": 3.0
+    },
+    {
+      "time": 3.8,
+      "type": "banner",
+      "text": "ASTEROID MINING SECTOR INFILTRATED",
+      "duration": 2.2
+    },
+    {
+      "time": 5.5,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "weaver", "offsetX": 0, "offsetY": -12 },
+        { "archetype": "weaver", "offsetX": 0, "offsetY": 12 }
+      ]
+    },
+    {
+      "time": 9.0,
+      "type": "banner",
+      "text": "SWOOPER DIVE-BOMBERS DETECTED",
+      "duration": 2.0
+    },
+    {
+      "time": 11.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 25,
+      "enemies": [
+        { "archetype": "swooper", "offsetX": 0, "offsetY": 0 },
+        { "archetype": "swooper", "offsetX": 12, "offsetY": 5 }
+      ]
+    },
+    {
+      "time": 15.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 65,
+      "enemies": [
+        { "archetype": "swooper", "offsetX": 0, "offsetY": 0 },
+        { "archetype": "swooper", "offsetX": 12, "offsetY": -5 }
+      ]
+    },
+    {
+      "time": 19.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "scout", "offsetX": 0, "offsetY": -20 },
+        { "archetype": "weaver", "offsetX": 10, "offsetY": 0 },
+        { "archetype": "scout", "offsetX": 0, "offsetY": 20 }
+      ]
+    },
+    {
+      "time": 24.0,
+      "type": "banner",
+      "text": "WARNING: ARMORED EXCAVATOR PATROL",
+      "duration": 2.2
+    },
+    {
+      "time": 26.5,
+      "type": "elite",
+      "archetype": "chaser",
+      "speed": 22,
+      "hp": 4,
+      "score": 400,
+      "message": "HEAVY GUNSHIP ENGAGING"
+    },
+    {
+      "time": 32.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "swooper", "offsetX": 0, "offsetY": -18 },
+        { "archetype": "weaver", "offsetX": 14, "offsetY": 0 },
+        { "archetype": "swooper", "offsetX": 0, "offsetY": 18 }
+      ]
+    },
+    {
+      "time": 38.0,
+      "type": "recovery",
+      "message": "FOUNDRY TURBINES OVERHEATING",
+      "duration": 2.0
+    },
+    {
+      "time": 41.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "weaver", "offsetX": 0, "offsetY": -16 },
+        { "archetype": "weaver", "offsetX": 8, "offsetY": 0 },
+        { "archetype": "weaver", "offsetX": 16, "offsetY": 16 }
+      ]
+    },
+    {
+      "time": 47.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "chaser", "offsetX": 0, "offsetY": -12 },
+        { "archetype": "swooper", "offsetX": 15, "offsetY": 15 }
+      ]
+    },
+    {
+      "time": 54.0,
+      "type": "boss_warning",
+      "warningText": "FOUNDRY GUARDIAN REACTOR ONLINE",
+      "duration": 4.0
+    },
+    {
+      "time": 58.5,
+      "type": "boss",
+      "bossId": "titan_warden",
+      "name": "TITAN WARDEN MK II",
+      "hp": 65
+    }
+  ]
+}
