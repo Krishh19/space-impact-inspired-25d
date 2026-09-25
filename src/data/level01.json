@@ -1,0 +1,168 @@
+{
+  "id": "level01",
+  "title": "STAGE 1",
+  "subtitle": "VERDANT ORBIT",
+  "events": [
+    {
+      "time": 0.5,
+      "type": "stage_title",
+      "title": "STAGE 1",
+      "subtitle": "VERDANT ORBIT",
+      "duration": 3.0
+    },
+    {
+      "time": 3.8,
+      "type": "banner",
+      "text": "VANGUARD PATROL DETECTED",
+      "duration": 2.2
+    },
+    {
+      "time": 5.5,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "scout", "offsetX": 0, "offsetY": 0 }
+      ]
+    },
+    {
+      "time": 8.5,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "scout", "offsetX": 0, "offsetY": -16 },
+        { "archetype": "scout", "offsetX": 0, "offsetY": 16 }
+      ]
+    },
+    {
+      "time": 12.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "scout", "offsetX": 0, "offsetY": 0 },
+        { "archetype": "scout", "offsetX": 14, "offsetY": -18 },
+        { "archetype": "scout", "offsetX": 14, "offsetY": 18 }
+      ]
+    },
+    {
+      "time": 16.0,
+      "type": "banner",
+      "text": "BIOMECHANICAL WEAVERS INBOUND",
+      "duration": 2.2
+    },
+    {
+      "time": 18.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "weaver", "offsetX": 0, "offsetY": 0 }
+      ]
+    },
+    {
+      "time": 22.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "weaver", "offsetX": 0, "offsetY": -14 },
+        { "archetype": "weaver", "offsetX": 16, "offsetY": 14 }
+      ]
+    },
+    {
+      "time": 26.5,
+      "type": "banner",
+      "text": "SWOOPER DIVE-BOMBERS APPROACHING",
+      "duration": 2.0
+    },
+    {
+      "time": 28.5,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "swooper", "offsetX": 0, "offsetY": 28 },
+        { "archetype": "swooper", "offsetX": 12, "offsetY": -26 }
+      ]
+    },
+    {
+      "time": 33.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "weaver", "offsetX": 0, "offsetY": 0 },
+        { "archetype": "scout", "offsetX": 12, "offsetY": -20 },
+        { "archetype": "scout", "offsetX": 12, "offsetY": 20 }
+      ]
+    },
+    {
+      "time": 38.0,
+      "type": "recovery",
+      "duration": 4.0,
+      "message": "SECTOR CLEAR // SENSORS RECHARGING"
+    },
+    {
+      "time": 42.5,
+      "type": "banner",
+      "text": "HEAVY ASSAULT CHASER DETECTED",
+      "duration": 2.2
+    },
+    {
+      "time": 44.5,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "chaser", "offsetX": 0, "offsetY": 0 }
+      ]
+    },
+    {
+      "time": 50.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "chaser", "offsetX": 0, "offsetY": 12 },
+        { "archetype": "swooper", "offsetX": 16, "offsetY": -28 }
+      ]
+    },
+    {
+      "time": 56.0,
+      "type": "wave",
+      "baseX": 170,
+      "baseY": 45,
+      "enemies": [
+        { "archetype": "weaver", "offsetX": 0, "offsetY": -12 },
+        { "archetype": "weaver", "offsetX": 14, "offsetY": 12 },
+        { "archetype": "scout", "offsetX": 28, "offsetY": 0 }
+      ]
+    },
+    {
+      "time": 62.0,
+      "type": "elite",
+      "archetype": "chaser",
+      "baseX": 170,
+      "baseY": 45,
+      "hp": 8,
+      "speed": 18,
+      "score": 1000,
+      "message": "ELITE GUNSHIP TITAN-01"
+    },
+    {
+      "time": 73.0,
+      "type": "boss_warning",
+      "warningText": "WARNING // MASSIVE SIGNATURE DETECTED",
+      "duration": 5.0
+    },
+    {
+      "time": 78.0,
+      "type": "boss",
+      "bossId": "titan_warden",
+      "name": "TITAN WARDEN",
+      "hp": 50
+    }
+  ]
+}
